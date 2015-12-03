@@ -7,38 +7,44 @@ var mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost/youbike');
 
-var sleep_time = 1000;
 
-fetchdata(1000);
+var CronJob = require('cron').CronJob;
+new CronJob('*/30 * * * * *', function() {
 
-function fetchdata(sleep_time) {
-  d = new Date();
-  console.log(d);
-  setTimeout(function() {
-    var start = +new Date();
-    var source = request(url);
-    var download_file = fs.createWriteStream('./youbike.json.gz');
-    source.on('response', function(res) {
-      res.pipe(download_file);
-    });
+  var current_time = new Date();
+  console.log(current_time);
 
-    download_file.on('finish', function() {
-      var inp = fs.createReadStream('youbike.json.gz');
-      var out = fs.createWriteStream('youbike.json');
+  var source = request(url);
+  var download_file = fs.createWriteStream('./youbike.json.gz');
+  var out = fs.createWriteStream('youbike.json');
 
-      inp.pipe(zlib.createGunzip()).pipe(out);
-      out.on('close', function() {
-        var testing = require('./youbike.json');
-        var length = Object.keys(testing.retVal).length;
+  source.on('response', function(res) {
+    // console.log("source.on execute");
+    res.pipe(download_file);
+  });
+
+  download_file.on('finish', function() {
+    // console.log("download_file.on execute");
+    var inp = fs.createReadStream('youbike.json.gz');
+    inp.pipe(zlib.createGunzip()).pipe(out);
+  })
+
+  out.on('close', function() {
+    // console.log("out.on execute");
+    // var youbike_per_minute = require('./youbike.json');
+    fs.readFile('./youbike.json', {encoding: 'utf-8'}, function(err, data) {
+      if (!err) {
+        var youbike_per_minute = JSON.parse(data);
+        var length = Object.keys(youbike_per_minute.retVal).length;
         var one_item = 0;
-
         YouBike.findOne({
-          mday: testing.retVal["0001"].mday
+          mday: youbike_per_minute.retVal["0001"].mday
         }, function(err, youbike_data) {
           if (!youbike_data) {
             // do stuff here
+            // console.log("Find nothing!");
             for (var i = 1; i <= length; i++) {
-              one_item = testing.retVal[addZero(i, 4)];
+              one_item = youbike_per_minute.retVal[addZero(i, 4)];
               //===========================Store into Database===========================
               // console.log(one_item);
               var new_bike = new YouBike(one_item);
@@ -47,21 +53,14 @@ function fetchdata(sleep_time) {
             }
           }
         });
-        // for (var i = 1; i <= length; i++) {
-        //   one_item = testing.retVal[addZero(i, 4)];
-        //   //===========================Store into Database===========================
-        //   // console.log(one_item);
-        //   // var new_bike = new YouBike(one_item);
-        //   // new_bike.save();
-        //   //===========================Store into Database===========================
-        // }
-        var end = +new Date();
-        // console.log((end - start) / 1000);
-        fetchdata(60000 - (end - start))
-      })
-    })
-  }, sleep_time);
-}
+
+      } else {
+        console.log(err);
+      }
+    });
+  })
+
+}, null, true, 'America/Los_Angeles');
 
 
 function addZero(num, n) {
