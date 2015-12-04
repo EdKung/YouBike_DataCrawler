@@ -1,12 +1,13 @@
+var express = require('express');
 var request = require('request');
 var fs = require('fs');
 var zlib = require("zlib");
 var url = 'http://data.taipei/youbike';
 var YouBike = require('./YouBike');
 var mongoose = require('mongoose');
+var app = express();
 
 mongoose.connect('mongodb://localhost/youbike');
-
 
 var CronJob = require('cron').CronJob;
 new CronJob('*/30 * * * * *', function() {
@@ -71,3 +72,14 @@ function addZero(num, n) {
   }
   return num;
 }
+
+console.log("===========================Server is starting===========================");
+
+app.use(express.static('web_interface'));
+
+// Home page
+app.get('/', function(request, response) {
+  console.log("This is /");
+});
+
+app.listen(8080);
