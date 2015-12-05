@@ -82,4 +82,12 @@ app.get('/', function(request, response) {
   console.log("This is /");
 });
 
+app.get('/list',function(request, response) {
+  YouBike.find({}, function(err, stationInfo) {
+    if (!err){
+        response.send(stationInfo);
+    } else {throw err;}
+  });
+});
+
 app.listen(8080);
