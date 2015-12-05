@@ -17,7 +17,7 @@ var YouBike = new Schema({
   bemp: String,
   act: String
 }, {
-    versionKey: false
+  versionKey: false
 });
 
 module.exports = mongoose.model('YouBike', YouBike);

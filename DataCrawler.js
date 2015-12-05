@@ -5,9 +5,12 @@ var zlib = require("zlib");
 var url = 'http://data.taipei/youbike';
 var YouBike = require('./YouBike');
 var mongoose = require('mongoose');
+var exec = require('child_process').exec;
 var app = express();
 
 mongoose.connect('mongodb://localhost/youbike');
+
+var jsonArr = [];
 
 var CronJob = require('cron').CronJob;
 new CronJob('*/30 * * * * *', function() {
@@ -51,6 +54,8 @@ new CronJob('*/30 * * * * *', function() {
               var new_bike = new YouBike(one_item);
               new_bike.save();
               //===========================Store into Database===========================
+
+              //console.log(YouBike.distinct( "sno" ));
             }
           }
         });
@@ -83,10 +88,31 @@ app.get('/', function(request, response) {
 });
 
 app.get('/list',function(request, response) {
-  YouBike.find({}, function(err, stationInfo) {
-    if (!err){
-        response.send(stationInfo);
-    } else {throw err;}
+  YouBike.find().distinct('sno', function(error, stationId) {
+      if (!error){
+        jsonArr = [];
+        for(var i=0; i< stationId.length; i++) {
+          YouBike.findOne({
+            sno: stationId[i]
+          }, function(err, stationNode) {
+            if(!err) {
+              if(stationNode != null) {
+                console.log(stationNode.sno);
+                console.log(stationNode.sna);
+                jsonArr.push({
+                    sno: stationNode.sno, sna: stationNode.sna
+                });
+                if(jsonArr.length === stationId.length) {
+                  console.log(JSON.stringify(jsonArr));
+                  response.contentType('application/json');
+                  response.send(JSON.stringify(jsonArr));
+                  response.end();
+                }
+              }
+            }
+          });
+        }
+      }
   });
 });
 

@@ -7,21 +7,8 @@ $(document).ready(function() {
     var s = $('<select />');
     $.each(result, function(index, youbike) {
       console.log(youbike);
-      $('<option />', {value: youbike.sno, text: youbike.sna}).appendTo(s);
+      $('<option />', {value: youbike.sno, text: youbike.sno + '-' + youbike.sna}).appendTo(s);
     })
     s.appendTo("#myDiv");
   });
 })
-
-/*
-function stationListGeneratore() {
-  var data = {
-    "key1": "value1",
-    "key2": "value2"
-  }
-  var s = $('<select />');
-  for(var val in data) {
-      $('<option />', {value: val, text: data[val]}).appendTo(s);
-  }
-  s.appendTo("#myDiv"); // or wherever it should be
-} */
