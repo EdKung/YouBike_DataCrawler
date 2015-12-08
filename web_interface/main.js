@@ -4,11 +4,15 @@ String.prototype.replaceAll = function(s1, s2) {
 
 $(document).ready(function() {
   $.getJSON('/list', function(result) {
-    var s = $('<select />');
+    var s = $('<select id="staDropDownList"></select>');
     $.each(result, function(index, youbike) {
-      console.log(youbike);
+      //console.log(youbike);
       $('<option />', {value: youbike.sno, text: youbike.sno + '-' + youbike.sna}).appendTo(s);
     })
-    s.appendTo("#myDiv");
+    s.appendTo("#divForStationList");
+  });
+
+  $('#staDropDownList').change(function() {
+      alert($(this).val());
   });
 })

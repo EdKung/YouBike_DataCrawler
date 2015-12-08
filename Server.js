@@ -53,3 +53,28 @@ function sortByKey(array, key) {
   return ((x < y) ? -1 : ((x > y) ? 1 : 0));
   });
 }
+
+/*
+ *  Return radian by degrees
+ */
+function Rad(d){
+   return d * Math.PI / 180.0;
+}
+
+/*
+ * Distance Calculation
+ * lat1 and lng2 are the latitude and longtitude of point1
+ * lat2 and lng2 are the latitude and longtitude of point2
+ */
+function GetDistance(lat1,lng1,lat2,lng2){
+    var radLat1 = Rad(lat1);
+    var radLat2 = Rad(lat2);
+    var a = radLat1 - radLat2;
+    var  b = Rad(lng1) - Rad(lng2);
+    var s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a/2),2) +
+    Math.cos(radLat1)*Math.cos(radLat2)*Math.pow(Math.sin(b/2),2)));
+    s = s *6378.137 ;                     // EARTH_RADIUS;
+    s = Math.round(s * 10000) / 10000;    // Unit: km
+    //s=s.toFixed(4);
+    return s;
+}

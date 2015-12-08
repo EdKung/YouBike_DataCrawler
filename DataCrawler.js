@@ -51,8 +51,6 @@ new CronJob('*/30 * * * * *', function() {
               var new_bike = new YouBike(one_item);
               new_bike.save();
               //===========================Store into Database===========================
-
-              //console.log(YouBike.distinct( "sno" ));
             }
           }
         });
