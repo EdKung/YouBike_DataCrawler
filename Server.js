@@ -104,11 +104,6 @@ app.route('/nearYouBike/:staionId')
         }
       }
     });
-    // YouBike.findOne({
-    //   sno: request.params.staionId
-    // }).sort({_id : -1}).exec(function(err, found_file) {
-    //   response.send(found_file);
-    // });
   })
 
 app.listen(8080);

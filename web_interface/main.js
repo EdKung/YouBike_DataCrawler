@@ -16,7 +16,7 @@ $(document).ready(function() {
     var eSno = eID.options[eID.selectedIndex].value;
     var eSta = eID.options[eID.selectedIndex].text;
     $.getJSON('/nearYouBike/' + eSno, function(near_youbikeSta) {
-      console.log(near_youbikeSta);
+      //console.log(near_youbikeSta);
       var result = $('<div></div>');
       result.append('<p>離此捷運站最近的五個UBike站資訊</p>')
       result.append('<p result1>' + '最近: ' + near_youbikeSta[0].sno + '-' + near_youbikeSta[0].sna + '<br>距離: ' + near_youbikeSta[0].dist + '公尺' + '<br>可借車輛: '+  near_youbikeSta[0].sbi +  '<br>可停空位: ' +  near_youbikeSta[0].bemp +'</p><br>');
@@ -34,7 +34,7 @@ $(document).ready(function() {
     var eSno = eID.options[eID.selectedIndex].value;
     var eSta = eID.options[eID.selectedIndex].text;
     $.getJSON('/nearYouBike/' + eSno, function(near_youbikeSta) {
-      console.log(near_youbikeSta);
+      //console.log(near_youbikeSta);
       var result = $('<div></div>');
       result.append('<p>離此捷運站最近的UBike站資訊</p>')
       result.append('<p result1>' + near_youbikeSta[0].sno + '-' + near_youbikeSta[0].sna + '<br>距離: ' + near_youbikeSta[0].dist + '公尺' + '<br>可借車輛: '+  near_youbikeSta[0].sbi +  '<br>可停空位: ' +  near_youbikeSta[0].bemp +'</p><br>');
@@ -48,7 +48,7 @@ $(document).ready(function() {
     var eSno = eID.options[eID.selectedIndex].value;
     var eSta = eID.options[eID.selectedIndex].text;
     $.getJSON('/youbike/' + eSno, function(youbike_info) {
-      console.log(youbike_info);
+      //console.log(youbike_info);
       var result = $('<div></div>');
       result.append('<p sta_id>' + '編號: ' + youbike_info.sno + '</p>');
       result.append('<p sta_num>' + '站名: ' + youbike_info.sna + '</p>');
