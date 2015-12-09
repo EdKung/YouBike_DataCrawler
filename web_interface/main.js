@@ -11,11 +11,28 @@ $(document).ready(function() {
     s.appendTo("#divForStationList");
   });
 
+  $('#BtnShowNearSta').on('click', function(event) {
+    var eID = document.getElementById("staDropDownList");
+    var eSno = eID.options[eID.selectedIndex].value;
+    var eSta = eID.options[eID.selectedIndex].text;
+    $.getJSON('/nearYouBike/' + eSno, function(near_youbikeSta) {
+      console.log(near_youbikeSta);
+      var result = $('<div></div>');
+      result.append('<p>離此捷運站最近的五個UBike的資訊</p>')
+      result.append('<p result1>' + '最近: ' + near_youbikeSta[0].sno + '-' + near_youbikeSta[0].sna + '<br>距離: ' + near_youbikeSta[0].dist + '公尺' + '<br>可借車輛: '+  near_youbikeSta[0].sbi +  ' 可停空位: ' +  near_youbikeSta[0].bemp +'</p><br>');
+      result.append('<p result2>' + '第二: ' + near_youbikeSta[1].sno + '-' + near_youbikeSta[1].sna + '<br>距離: ' + near_youbikeSta[1].dist + '公尺' + '<br>可借車輛: '+  near_youbikeSta[1].sbi +  ' 可停空位: ' +  near_youbikeSta[1].bemp +'</p><br>');
+      result.append('<p result3>' + '第三: ' + near_youbikeSta[2].sno + '-' + near_youbikeSta[2].sna + '<br>距離: ' + near_youbikeSta[2].dist + '公尺' + '<br>可借車輛: '+  near_youbikeSta[2].sbi +  ' 可停空位: ' +  near_youbikeSta[2].bemp +'</p><br>');
+      result.append('<p result4>' + '第四: ' + near_youbikeSta[3].sno + '-' + near_youbikeSta[3].sna + '<br>距離: ' + near_youbikeSta[3].dist + '公尺' + '<br>可借車輛: '+  near_youbikeSta[3].sbi +  ' 可停空位: ' +  near_youbikeSta[3].bemp +'</p><br>');
+      result.append('<p result5>' + '第五: ' + near_youbikeSta[4].sno + '-' + near_youbikeSta[4].sna + '<br>距離: ' + near_youbikeSta[4].dist + '公尺' + '<br>可借車輛: '+  near_youbikeSta[4].sbi +  ' 可停空位: ' +  near_youbikeSta[4].bemp +'</p><br>');
+      $('.station-status').fadeToggle();
+      $('.station-status').html(result).fadeToggle();
+    });
+  });
+
   $('#BtnSelectSta').on('click', function(event) {
     var eID = document.getElementById("staDropDownList");
     var eSno = eID.options[eID.selectedIndex].value;
     var eSta = eID.options[eID.selectedIndex].text;
-
     $.getJSON('/youbike/' + eSno, function(youbike_info) {
       console.log(youbike_info);
       var result = $('<div></div>');

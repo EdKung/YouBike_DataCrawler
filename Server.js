@@ -1,6 +1,7 @@
 var express = require('express');
 var YouBike = require('./YouBike');
 var mongoose = require('mongoose');
+var constants = require("./constants");
 var app = express();
 var jsonArr = [];
 
@@ -19,7 +20,7 @@ app.get('/list',function(request, response) {
       if (!error){
         jsonArr = [];
         console.log(stationId);
-        for(var i=0; i< stationId.length; i++) {  
+        for(var i=0; i< stationId.length; i++) {
           YouBike.findOne({
             sno: stationId[i]
           }).exec(function(err, stationNode) {
@@ -47,13 +48,67 @@ app.get('/list',function(request, response) {
 
 // Route for /youbike/:staionId
 app.route('/youbike/:staionId')
-  //===========================GET /youbike/:filename===========================
+  //===========================GET /youbike/:staionId===========================
   .get(function(request, response) {
     YouBike.findOne({
       sno: request.params.staionId
     }).sort({_id : -1}).exec(function(err, found_file) {
       response.send(found_file);
     });
+  })
+
+// Route for /nearYouBike/:staionId
+app.route('/nearYouBike/:staionId')
+  //===========================GET /nearYouBike/:staionId===========================
+  .get(function(request, response) {
+    YouBike.findOne({
+      sno: request.params.staionId
+    }).exec(function(err, found_file) {
+      jsonArr = [];
+      var lat1 = found_file.lat;
+      var lng1 = found_file.lng;
+      console.log(lat1);
+      console.log(lng1);
+
+      for(var i=1; i<= constants.Total_Station_Num; i++) {
+        var targetId = addZero(i, 4);
+        if(targetId !== request.params.staionId) {
+          YouBike.findOne({
+            sno: addZero(i, 4)
+          }).exec(function(err, stationNode) {
+            if(!err) {
+              if(stationNode != null) {
+                var lat2 = stationNode.lat;
+                var lng2 = stationNode.lng;
+                var distance = GetDistance(lat1,lng1,lat2,lng2);
+
+                console.log(lat2);
+                console.log(lng2);
+                console.log("---distance: " + distance);
+
+                jsonArr.push({
+                    sno: stationNode.sno, sna: stationNode.sna, dist: distance,
+                    sbi: stationNode.sbi, bemp: stationNode.bemp
+                });
+
+                if(jsonArr.length === constants.Total_Station_Num - 1) {
+                  sortByKey(jsonArr, 'dist');
+                  console.log(JSON.stringify(jsonArr));
+                  response.contentType('application/json');
+                  response.send(JSON.stringify(jsonArr));
+                  response.end();
+                }
+              }
+            }
+          });
+        }
+      }
+    });
+    // YouBike.findOne({
+    //   sno: request.params.staionId
+    // }).sort({_id : -1}).exec(function(err, found_file) {
+    //   response.send(found_file);
+    // });
   })
 
 app.listen(8080);
@@ -89,7 +144,17 @@ function GetDistance(lat1,lng1,lat2,lng2){
     var s = 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(a/2),2) +
     Math.cos(radLat1)*Math.cos(radLat2)*Math.pow(Math.sin(b/2),2)));
     s = s *6378.137 ;                     // EARTH_RADIUS;
-    s = Math.round(s * 10000) / 10000;    // Unit: km
+    //s = Math.round(s * 10000) / 10000;    // Unit: km
+    s = Math.round(s * 10000) / 10;    // Unit: m
     //s=s.toFixed(4);
     return s;
+}
+
+function addZero(num, n) {
+  var len = num.toString().length;
+  while (len < n) {
+    num = "0" + num;
+    len++;
+  }
+  return num;
 }
