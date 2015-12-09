@@ -19,10 +19,10 @@ app.get('/list',function(request, response) {
       if (!error){
         jsonArr = [];
         console.log(stationId);
-        for(var i=0; i< stationId.length; i++) {
+        for(var i=0; i< stationId.length; i++) {  
           YouBike.findOne({
             sno: stationId[i]
-          }, function(err, stationNode) {
+          }).exec(function(err, stationNode) {
             if(!err) {
               if(stationNode != null) {
                 console.log(stationNode.sno);
@@ -45,6 +45,17 @@ app.get('/list',function(request, response) {
   });
 });
 
+// Route for /youbike/:staionId
+app.route('/youbike/:staionId')
+  //===========================GET /youbike/:filename===========================
+  .get(function(request, response) {
+    YouBike.findOne({
+      sno: request.params.staionId
+    }).sort({_id : -1}).exec(function(err, found_file) {
+      response.send(found_file);
+    });
+  })
+
 app.listen(8080);
 
 function sortByKey(array, key) {
@@ -53,6 +64,10 @@ function sortByKey(array, key) {
   return ((x < y) ? -1 : ((x > y) ? 1 : 0));
   });
 }
+
+/**
+  * Function for searching
+  */
 
 /*
  *  Return radian by degrees
