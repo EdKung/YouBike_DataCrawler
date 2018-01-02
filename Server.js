@@ -2,6 +2,7 @@ var express = require('express');
 var YouBike = require('./YouBike');
 var mongoose = require('mongoose');
 var constants = require("./constants");
+var fs = require('fs');
 var app = express();
 var jsonArr = [];
 
@@ -16,33 +17,12 @@ app.get('/', function(request, response) {
 });
 
 app.get('/list',function(request, response) {
-  YouBike.find().distinct('sno', function(error, stationId) {
-      if (!error){
-        jsonArr = [];
-        console.log(stationId);
-        for(var i=0; i< stationId.length; i++) {
-          YouBike.findOne({
-            sno: stationId[i]
-          }).exec(function(err, stationNode) {
-            if(!err) {
-              if(stationNode != null) {
-                console.log(stationNode.sno);
-                console.log(stationNode.sna);
-                jsonArr.push({
-                    sno: stationNode.sno, sna: stationNode.sna
-                });
-                if(jsonArr.length === stationId.length) {
-                  sortByKey(jsonArr, 'sno');
-                  console.log(JSON.stringify(jsonArr));
-                  response.contentType('application/json');
-                  response.send(JSON.stringify(jsonArr));
-                  response.end();
-                }
-              }
-            }
-          });
-        }
-      }
+  fs.readFile('./station.json', 'utf8', function (err, data) {
+    if (err) throw err;
+    obj = JSON.parse(data);
+    response.contentType('application/json');
+    response.send(obj);
+    response.end();
   });
 });
 
@@ -93,7 +73,7 @@ app.route('/nearYouBike/:staionId')
 
                 if(jsonArr.length === constants.Total_Station_Num - 1) {
                   sortByKey(jsonArr, 'dist');
-                  console.log(JSON.stringify(jsonArr));
+                  // console.log(JSON.stringify(jsonArr));
                   response.contentType('application/json');
                   response.send(JSON.stringify(jsonArr));
                   response.end();
