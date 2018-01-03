@@ -18,12 +18,16 @@ app.get('/', function(request, response) {
 });
 
 app.get('/list',function(request, response) {
-  fs.readFileAsync('./station.json', 'utf8')
-    .then(JSON.parse)
-    .then(function (data) {
+  fs.readFileAsync('./station.json', 'utf8').then(JSON.parse).then(function (data) {
       response.contentType('application/json');
       response.send(data);
       response.end();
+  })
+  .catch(SyntaxError, function (e) {
+    console.error("invalid json in file");
+  })
+  .catch(function (e) {
+      console.error("unable to read file");
   });
 });
 
