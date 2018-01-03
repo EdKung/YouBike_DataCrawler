@@ -2,7 +2,8 @@ var express = require('express');
 var YouBike = require('./YouBike');
 var mongoose = require('mongoose');
 var constants = require("./constants");
-var fs = require('fs');
+var Promise = require("bluebird");
+var fs = Promise.promisifyAll(require('fs'));
 var app = express();
 var jsonArr = [];
 
@@ -17,12 +18,12 @@ app.get('/', function(request, response) {
 });
 
 app.get('/list',function(request, response) {
-  fs.readFile('./station.json', 'utf8', function (err, data) {
-    if (err) throw err;
-    obj = JSON.parse(data);
-    response.contentType('application/json');
-    response.send(obj);
-    response.end();
+  fs.readFileAsync('./station.json', 'utf8')
+    .then(JSON.parse)
+    .then(function (data) {
+      response.contentType('application/json');
+      response.send(data);
+      response.end();
   });
 });
 
@@ -47,8 +48,8 @@ app.route('/nearYouBike/:staionId')
       jsonArr = [];
       var lat1 = found_file.lat;
       var lng1 = found_file.lng;
-      console.log(lat1);
-      console.log(lng1);
+      // console.log(lat1);
+      // console.log(lng1);
 
       for(var i=1; i<= constants.Total_Station_Num; i++) {
         var targetId = addZero(i, 4);
